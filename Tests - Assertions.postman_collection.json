@@ -1,0 +1,113 @@
+{
+  "info": {
+    "_postman_id": "82154d54-1c4d-43a2-8d9b-0bf41e0e6765",
+    "name": "Tests - Assertions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57963039",
+    "_collection_link": "https://go.postman.co/collection/57963039-82154d54-1c4d-43a2-8d9b-0bf41e0e6765?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Scripts - users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// test 1 : status code is 200\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n})\n\n// test 2 : response time is less than 300ms\npm.test(\"Response time is less than 300ms\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(100);\n})\n\n//test 3 : response has \"users\" array\npm.test(\"Response has 'users' array\", function () {\n    var jsonData = pm.response.json()\n    pm.expect(jsonData).to.have.property('users')\n    pm.expect(jsonData.users).to.be.an('array')\n})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://dummyjson.com/users",
+          "protocol": "https",
+          "host": [
+            "dummyjson",
+            "com"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Scripts - Verify json Data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Pozri sa na prvého používateľa v zozname a over, či je jeho ID presne číslo 7. \n// Ak chcem skontrolovat druheho alebo ineho v poradi musim zmenit cislov hranatej zatvorke jsonData[]\n// v Javascrip sa pocita od 0 = co je prvy akoze\n\nlet jsonData = pm.response.json();\npm.test(\"ID is 1\", function () {\n    pm.expect(jsonData.data[0].id).to.eql(7);\n})\n\npm.test(\"ID is 2\", function () {\n    pm.expect(jsonData.data[1].id).to.eql(8);\n})\n\npm.test(\"Email is OK\", function () {\n    pm.expect(jsonData.data[0].email).to.eql(\"michael.lawson@reqres.in\");\n})\n\npm.test(\"Fist name is OK\", function () {\n    pm.expect(jsonData.data[0].first_name).to.eql(\"Michael\");\n})\n\npm.test(\"Last name is OK\", function () {\n    pm.expect(jsonData.data[1].last_name).to.eql(\"Ferguson\");\n})\n "
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://reqres.in/api/users?page=2",
+          "protocol": "https",
+          "host": [
+            "reqres",
+            "in"
+          ],
+          "path": [
+            "api",
+            "users"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Before Scripts - Request unique ID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "//Dynamické generovanie unikátnych dát: Ak testuješ registráciu alebo vytváranie nového záznamu a nechceš dostávať chybu „User already exists“, UUID môžeš použiť na vygenerovanie vždy unikátnej hodnoty\n\n// generate at new UUID using postman bultin crypto modlue\nconst uuid = crypto.randomUUID();\n\n// save the generated uuid to an envinronment variable \"requestID\"\npm.environment.set(\"requestID\", uuid);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Requested-ID",
+            "value": "{{requestID}}"
+          }
+        ],
+        "url": {
+          "raw": "https://httpbin.org/anything",
+          "protocol": "https",
+          "host": [
+            "httpbin",
+            "org"
+          ],
+          "path": [
+            "anything"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
